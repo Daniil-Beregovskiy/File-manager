@@ -18,7 +18,7 @@ namespace File_manager
         int havePas;
         Сustomization custom = new Сustomization();
         public string login;
-        string password;
+        string pass;
         public Form1()
         {
             InitializeComponent();
@@ -116,7 +116,7 @@ namespace File_manager
             listView1.Font = custom.font;
             havePas = custom.havePas;
             login = custom.login;
-            password = custom.password;
+            pass = custom.password;
         }
         private void Login(int HavePas)
         {
@@ -129,14 +129,22 @@ namespace File_manager
                     loginCheck = Microsoft.VisualBasic.Interaction.InputBox("Логин");
                 }
                 string passwordCheck = Microsoft.VisualBasic.Interaction.InputBox("Пароль");
-                while (passwordCheck != password)
+                while (passwordCheck != pass)
                 {
                     MessageBox.Show("Неверный пароль");
                     passwordCheck = Microsoft.VisualBasic.Interaction.InputBox("Пароль");
                 }
             }
         }
-        private void TakeDisk() //Получение всех дисков
+
+        //Получение дисков
+
+        //WebClient client = new WebClient();
+        //string reply = client.DownloadString(address);
+        /// <summary>
+        /// hhh
+        /// </summary>
+        private void TakeDisk()
         {
                 foreach (DriveInfo drive in DriveInfo.GetDrives())
                 {
@@ -146,19 +154,22 @@ namespace File_manager
 
                 }
         }
-        private void WriteChild(TreeNode a) //Получение всех папок и файлов и заненсение их в дерево
+
+        //Папок и файлы, заненсение их в дерево
+        private void WriteChild(TreeNode a) 
         {
                 string[] dirs = Directory.GetDirectories(a.Text);
+
                 if (true)
                 {
                     foreach (string dir in dirs)
                     {
                         TreeNode newNode = new TreeNode(dir);
                         a.Nodes.Add(newNode);
+
                         newNode.Name = newNode.Text;
                         newNode.Text = dir.Remove(0, dir.LastIndexOf('\\') + 1);
                         int leng = newNode.Name.Length - 4;
-                        //Console.WriteLine(leng);
                         if (newNode.Name[leng] == '.' && newNode.Name[leng + 1] == 'z' && newNode.Name[leng + 2] == 'i' && newNode.Name[leng + 3] == 'p')
                             newNode.ImageIndex = 0;
                     }
@@ -186,6 +197,7 @@ namespace File_manager
         {
                 TreeNode node = treeView1.SelectedNode;
                 string newName = Microsoft.VisualBasic.Interaction.InputBox("название папки");
+
                 Directory.CreateDirectory($"{node.Name}\\{newName}");
                 TreeNode newNode = new TreeNode($"{node.Name}\\{newName}");
                 newNode.Text = $"{newName}";
@@ -193,7 +205,9 @@ namespace File_manager
                 node.Nodes.Add(newNode);
             
         }
-        void renameMenuItem_Click(object sender, EventArgs e) //Переименование файла или папки
+
+        //Переименование файла или папки
+        void renameMenuItem_Click(object sender, EventArgs e)
         {
 
                 TreeNode node = treeView1.SelectedNode;
@@ -212,7 +226,9 @@ namespace File_manager
                     node.Name = node.Name.Substring(0, node.Name.LastIndexOf('\\') + 1) + newName;
                 }
         }
-        void deleteMenuItem_Click(object sender, EventArgs e) //Удаление
+
+        //Удаление папок
+        void deleteMenuItem_Click(object sender, EventArgs e)
         {
 
                 TreeNode node = treeView1.SelectedNode;
@@ -229,7 +245,9 @@ namespace File_manager
 
 
         }
-        void archiveMenuItem_Click(object sender, EventArgs e) //Архивирование
+
+        //Архивирование папок
+        void archiveMenuItem_Click(object sender, EventArgs e)
         {
 
                 TreeNode node = treeView1.SelectedNode;
@@ -254,7 +272,9 @@ namespace File_manager
                 }
 
         }
-        void antiArchiveMenuItem_Click(object sender, EventArgs e) //Разархивировния, реализовано только для файлов
+
+        //Разархивировния, реализовано только для файлов
+        void antiArchiveMenuItem_Click(object sender, EventArgs e)
         {
                 TreeNode node = treeView1.SelectedNode;
                 ZipFile.ExtractToDirectory(node.Name, node.Name.Substring(0, node.Name.LastIndexOf('\\')));
@@ -268,29 +288,23 @@ namespace File_manager
                 }
 
         }
-        public static void Compress(string sourceFile, string compressedFile)// Вспомогательный метод для архивирования файлов
-        {
-            // поток для чтения исходного файла
-            using (FileStream sourceStream = new FileStream(sourceFile, FileMode.OpenOrCreate))
-            {
-                // поток для записи сжатого файла
-                using (FileStream targetStream = File.Create(compressedFile))
-                {
-                    // поток архивации
-                    using (GZipStream compressionStream = new GZipStream(targetStream, CompressionMode.Compress))
-                    {
-                        sourceStream.CopyTo(compressionStream); // копируем байты из одного потока в другой
 
-                    }
-                }
-            }
+        // для архивации
+        public static void Compress(string sourceFile, string compressedFile)
+        {
+            using (FileStream sourceStream = new FileStream(sourceFile, FileMode.OpenOrCreate))
+                using (FileStream targetStream = File.Create(compressedFile))
+                    using (GZipStream compressionStream = new GZipStream(targetStream, CompressionMode.Compress))
+                        sourceStream.CopyTo(compressionStream);
         }
-        void moveFromMenuItem_Click(object sender, EventArgs e)// Обработка нажатия "переместить что"
+        void moveFromMenuItem_Click(object sender, EventArgs e)
         {
             nod = treeView1.SelectedNode;
             flagMove = 1;
         }
-        void moveMenuItem_Click(object sender, EventArgs e) //Перемещение
+
+        //Перемещение папок
+        void moveMenuItem_Click(object sender, EventArgs e)
         {
 
                 if (flagMove == 1)
@@ -320,7 +334,7 @@ namespace File_manager
             
 
         }
-        void copyMenuItem_Click(object sender, EventArgs e) //Копирование
+        void copyMenuItem_Click(object sender, EventArgs e)
         {
 
                 nod = treeView1.SelectedNode;
@@ -329,9 +343,8 @@ namespace File_manager
            
         }
 
-
-
-        void treeView1_MouseDown(object sender, MouseEventArgs e)// Обработка двойного клика по файлу
+        // Двойной клик по файлу
+        void treeView1_MouseDown(object sender, MouseEventArgs e)
         {
             string url;
             TreeNode node = treeView1.SelectedNode;
@@ -344,7 +357,9 @@ namespace File_manager
 
 
         }
-        void treeView1_MouseClick(object sender, MouseEventArgs e)// Заполнение информации по файлу по клику
+
+        // Информация по клику
+        void treeView1_MouseClick(object sender, MouseEventArgs e)
         {
             TreeNode a = treeView1.SelectedNode;
             listView1.Items.Clear();
@@ -377,7 +392,9 @@ namespace File_manager
             Close();
 
         }
-        private void pasteMenuItem_Click(object sender, EventArgs e)// Обработка "Вставить"
+
+        // Вставить папку
+        private void pasteMenuItem_Click(object sender, EventArgs e)
         {
 
                 if (flag == 1)
@@ -421,6 +438,50 @@ namespace File_manager
             TreeNode node = treeView1.SelectedNode;
             Process.Start(node.Name);
         }
+
+        private void button1_Click(object sender, EventArgs e) // задний фон
+        {
+            colorDialog1.Color = treeView1.BackColor;
+            if (colorDialog1.ShowDialog() == DialogResult.Cancel)
+                return;
+            treeView1.BackColor = colorDialog1.Color;
+            listView1.BackColor = colorDialog1.Color;
+
+            custom.backColor = treeView1.BackColor;
+            custom.Save();
+        }
+
+        private void button3_Click(object sender, EventArgs e) // шрифт
+        {
+            if (fontDialog1.ShowDialog() == DialogResult.Cancel)
+                return;
+            treeView1.Font = fontDialog1.Font;
+            listView1.Font = fontDialog1.Font;
+            Console.WriteLine(fontDialog1.Font.GetType());
+
+            custom.font = listView1.Font;
+            custom.Save();
+        }
+
+        private void button4_Click(object sender, EventArgs e)
+        {
+            havePas = 1;
+            login = Microsoft.VisualBasic.Interaction.InputBox("Логин");
+            pass = Microsoft.VisualBasic.Interaction.InputBox("Пароль");
+
+            custom.havePas = havePas;
+            custom.login = login;
+            custom.password = pass;
+            custom.Save();
+        }
+
+        private void button5_Click(object sender, EventArgs e)
+        {
+            havePas = 0;
+
+            custom.havePas = havePas;
+            custom.Save();
+        }
         private void changeBackColor_Click(object sender, EventArgs e)
         {
 
@@ -459,49 +520,6 @@ namespace File_manager
         private void button2_Click_1(object sender, EventArgs e) // задний фон
         {
 
-        }
-        private void button1_Click(object sender, EventArgs e) // задний фон
-        {
-            colorDialog1.Color = treeView1.BackColor;
-            if (colorDialog1.ShowDialog() == DialogResult.Cancel)
-                return;
-            treeView1.BackColor = colorDialog1.Color;
-            listView1.BackColor = colorDialog1.Color;
-
-            custom.backColor = treeView1.BackColor;
-            custom.Save();
-        }
-
-        private void button3_Click(object sender, EventArgs e) // шрифт
-        {
-            if (fontDialog1.ShowDialog() == DialogResult.Cancel)
-                return;
-            treeView1.Font = fontDialog1.Font;
-            listView1.Font = fontDialog1.Font;
-            Console.WriteLine(fontDialog1.Font.GetType());
-
-            custom.font = listView1.Font;
-            custom.Save();
-        }
-
-        private void button4_Click(object sender, EventArgs e)
-        {
-            havePas = 1;
-            login = Microsoft.VisualBasic.Interaction.InputBox("Логин");
-            password = Microsoft.VisualBasic.Interaction.InputBox("Пароль");
-
-            custom.havePas = havePas;
-            custom.login = login;
-            custom.password = password;
-            custom.Save();
-        }
-
-        private void button5_Click(object sender, EventArgs e)
-        {
-            havePas = 0;
-
-            custom.havePas = havePas;
-            custom.Save();
         }
     }
 }

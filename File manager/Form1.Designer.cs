@@ -122,7 +122,7 @@
             // 
             this.button1.Location = new System.Drawing.Point(12, 7);
             this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(186, 23);
+            this.button1.Size = new System.Drawing.Size(189, 23);
             this.button1.TabIndex = 7;
             this.button1.Text = "Изменить задний фон";
             this.button1.UseVisualStyleBackColor = true;
@@ -130,9 +130,9 @@
             // 
             // button3
             // 
-            this.button3.Location = new System.Drawing.Point(204, 7);
+            this.button3.Location = new System.Drawing.Point(207, 7);
             this.button3.Name = "button3";
-            this.button3.Size = new System.Drawing.Size(159, 23);
+            this.button3.Size = new System.Drawing.Size(174, 23);
             this.button3.TabIndex = 7;
             this.button3.Text = "Изменить шрифт";
             this.button3.UseVisualStyleBackColor = true;
@@ -140,9 +140,9 @@
             // 
             // button4
             // 
-            this.button4.Location = new System.Drawing.Point(369, 7);
+            this.button4.Location = new System.Drawing.Point(387, 7);
             this.button4.Name = "button4";
-            this.button4.Size = new System.Drawing.Size(202, 23);
+            this.button4.Size = new System.Drawing.Size(216, 23);
             this.button4.TabIndex = 7;
             this.button4.Text = "Поставить логин и пароль";
             this.button4.UseVisualStyleBackColor = true;
@@ -150,9 +150,9 @@
             // 
             // button5
             // 
-            this.button5.Location = new System.Drawing.Point(577, 7);
+            this.button5.Location = new System.Drawing.Point(609, 7);
             this.button5.Name = "button5";
-            this.button5.Size = new System.Drawing.Size(179, 23);
+            this.button5.Size = new System.Drawing.Size(190, 23);
             this.button5.TabIndex = 7;
             this.button5.Text = "Убрать логин и пароль";
             this.button5.UseVisualStyleBackColor = true;
@@ -170,8 +170,11 @@
             this.Controls.Add(this.comboBox1);
             this.Controls.Add(this.listView1);
             this.Controls.Add(this.treeView1);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.Fixed3D;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "Form1";
+            this.SizeGripStyle = System.Windows.Forms.SizeGripStyle.Hide;
+            this.StartPosition = System.Windows.Forms.FormStartPosition.Manual;
             this.Text = "Файловый менеджер";
             this.Load += new System.EventHandler(this.Form1_Load);
             this.ResumeLayout(false);
