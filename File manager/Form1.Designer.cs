@@ -45,6 +45,7 @@
             this.button3 = new System.Windows.Forms.Button();
             this.button4 = new System.Windows.Forms.Button();
             this.button5 = new System.Windows.Forms.Button();
+            this.contextMenuStrip3 = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.SuspendLayout();
             // 
             // treeView1
@@ -76,7 +77,7 @@
             this.listView1.HideSelection = false;
             this.listView1.Location = new System.Drawing.Point(269, 41);
             this.listView1.Name = "listView1";
-            this.listView1.Size = new System.Drawing.Size(862, 546);
+            this.listView1.Size = new System.Drawing.Size(1440, 547);
             this.listView1.Sorting = System.Windows.Forms.SortOrder.Descending;
             this.listView1.TabIndex = 6;
             this.listView1.UseCompatibleStateImageBehavior = false;
@@ -85,23 +86,23 @@
             // 
             // columnHeader1
             // 
-            this.columnHeader1.Text = "Имя";
-            this.columnHeader1.Width = 128;
+            this.columnHeader1.Text = "Название";
+            this.columnHeader1.Width = 649;
             // 
             // columnHeader2
             // 
-            this.columnHeader2.Text = "Тип";
-            this.columnHeader2.Width = 163;
+            this.columnHeader2.Text = "Автор";
+            this.columnHeader2.Width = 175;
             // 
             // columnHeader3
             // 
-            this.columnHeader3.Text = "Размер";
-            this.columnHeader3.Width = 192;
+            this.columnHeader3.Text = "Рейтинг";
+            this.columnHeader3.Width = 95;
             // 
             // columnHeader4
             // 
-            this.columnHeader4.Text = "Дата";
-            this.columnHeader4.Width = 138;
+            this.columnHeader4.Text = "Цена";
+            this.columnHeader4.Width = 104;
             // 
             // contextMenuStrip1
             // 
@@ -114,7 +115,7 @@
             this.comboBox1.FormattingEnabled = true;
             this.comboBox1.Location = new System.Drawing.Point(269, 585);
             this.comboBox1.Name = "comboBox1";
-            this.comboBox1.Size = new System.Drawing.Size(862, 24);
+            this.comboBox1.Size = new System.Drawing.Size(1440, 24);
             this.comboBox1.TabIndex = 4;
             this.comboBox1.SelectedIndexChanged += new System.EventHandler(this.comboBox1_SelectedIndexChanged);
             // 
@@ -158,11 +159,18 @@
             this.button5.UseVisualStyleBackColor = true;
             this.button5.Click += new System.EventHandler(this.button5_Click);
             // 
+            // contextMenuStrip3
+            // 
+            this.contextMenuStrip3.ImageScalingSize = new System.Drawing.Size(20, 20);
+            this.contextMenuStrip3.Name = "contextMenuStrip3";
+            this.contextMenuStrip3.Size = new System.Drawing.Size(61, 4);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1143, 621);
+            this.AutoSize = true;
+            this.ClientSize = new System.Drawing.Size(1724, 623);
             this.Controls.Add(this.button5);
             this.Controls.Add(this.button4);
             this.Controls.Add(this.button3);
@@ -173,8 +181,7 @@
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.Fixed3D;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "Form1";
-            this.SizeGripStyle = System.Windows.Forms.SizeGripStyle.Hide;
-            this.StartPosition = System.Windows.Forms.FormStartPosition.Manual;
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "Файловый менеджер";
             this.Load += new System.EventHandler(this.Form1_Load);
             this.ResumeLayout(false);
@@ -188,7 +195,6 @@
         private System.Windows.Forms.ColumnHeader columnHeader1;
         private System.Windows.Forms.ColumnHeader columnHeader2;
         private System.Windows.Forms.ColumnHeader columnHeader3;
-        private System.Windows.Forms.ColumnHeader columnHeader4;
         private System.Windows.Forms.ImageList imageList1;
         private System.Windows.Forms.ContextMenuStrip contextMenuStrip1;
         private System.Windows.Forms.ColorDialog colorDialog1;
@@ -198,6 +204,8 @@
         private System.Windows.Forms.Button button3;
         private System.Windows.Forms.Button button4;
         private System.Windows.Forms.Button button5;
+        private System.Windows.Forms.ContextMenuStrip contextMenuStrip3;
+        private System.Windows.Forms.ColumnHeader columnHeader4;
     }
 }
 

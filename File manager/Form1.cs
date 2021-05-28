@@ -7,6 +7,18 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using OpenQA.Selenium;
+using OpenQA.Selenium.Chrome;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Drawing;
+using System.Net;
+using System.Net.Http;
+using System.Runtime.Serialization;
+using System.Runtime.Serialization.Formatters.Binary;
+using System.Security.Cryptography;
+using System.Text;
+using System.Threading;
 
 namespace File_manager
 {
@@ -26,31 +38,8 @@ namespace File_manager
             GiveSetting();
             Login(havePas);
             this.WindowState = FormWindowState.Maximized;
-            TakeDisk();
-            ToolStripMenuItem createDirMenuItem = new ToolStripMenuItem("Создать папку");
-            ToolStripMenuItem renameMenuItem = new ToolStripMenuItem("Переименовать");
-            ToolStripMenuItem deleteMenuItem = new ToolStripMenuItem("Удалить");
-            ToolStripMenuItem archiveMenuItem = new ToolStripMenuItem("Архивировать");
-            ToolStripMenuItem antiArchiveMenuItem = new ToolStripMenuItem("Разархивировать");
-            ToolStripMenuItem moveFromMenuItem = new ToolStripMenuItem("Переместить что");
-            ToolStripMenuItem moveMenuItem = new ToolStripMenuItem("Переместить куда");
-            ToolStripMenuItem copyMenuItem = new ToolStripMenuItem("Скопировать");
-            ToolStripMenuItem pasteMenuItem = new ToolStripMenuItem("Вставить");
-            ToolStripMenuItem openMenuItem = new ToolStripMenuItem("Открыть");
-            ToolStripMenuItem searchRegex = new ToolStripMenuItem("Поиск по выражению");
-            contextMenuStrip1.Items.AddRange(new[] { createDirMenuItem, renameMenuItem, deleteMenuItem, archiveMenuItem, antiArchiveMenuItem, moveFromMenuItem, moveMenuItem, copyMenuItem, pasteMenuItem, openMenuItem, searchRegex });
-            treeView1.ContextMenuStrip = contextMenuStrip1;
-            createDirMenuItem.Click += createDirMenuItem_Click;
-            renameMenuItem.Click += renameMenuItem_Click;
-            deleteMenuItem.Click += deleteMenuItem_Click;
-            archiveMenuItem.Click += archiveMenuItem_Click;
-            antiArchiveMenuItem.Click += antiArchiveMenuItem_Click;
-            moveFromMenuItem.Click += moveFromMenuItem_Click;
-            moveMenuItem.Click += moveMenuItem_Click;
-            copyMenuItem.Click += copyMenuItem_Click;
-            pasteMenuItem.Click += pasteMenuItem_Click;
-            openMenuItem.Click += openMenuItem_Click;
-            searchRegex.Click += searchRegex_Click;
+            GiveMainLang();
+
             ToolStripMenuItem changeBackColor = new ToolStripMenuItem("Изменить задний фон");
             ToolStripMenuItem changeFont = new ToolStripMenuItem("Изменить шрифт");
             ToolStripMenuItem setPassword = new ToolStripMenuItem("Установить логин и пароль");
@@ -59,8 +48,56 @@ namespace File_manager
             changeFont.Click += changeFont_Click;
             setPassword.Click += setPassword_Click;
             removePassword.Click += removePassword_Click;
+
+            ToolStripMenuItem searchNewBooks = new ToolStripMenuItem("Искать новые книги");
+            contextMenuStrip1.Items.AddRange(new[] { searchNewBooks });
+            treeView1.ContextMenuStrip = contextMenuStrip1;
+            searchNewBooks.Click += searchNewBooks_Click;
+            changeBackColor.Click += changeBackColor_Click;
+            changeFont.Click += changeFont_Click;
+            setPassword.Click += setPassword_Click;
+            removePassword.Click += removePassword_Click;
+            ToolStripMenuItem goToBook = new ToolStripMenuItem("Открыть в браузере");
+            contextMenuStrip3.Items.AddRange(new[] { goToBook });
+            listView1.ContextMenuStrip = contextMenuStrip3;
+            goToBook.Click += goToBook_Click;
+
+            this.WindowState = System.Windows.Forms.FormWindowState.Normal;
         }
 
+        private void searchNewBooks_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                string nameLang = Microsoft.VisualBasic.Interaction.InputBox("Введите навзвание языка");
+                int countBooks = int.Parse(Microsoft.VisualBasic.Interaction.InputBox("Введите количество книг"));
+                while (countBooks < 1)
+                {
+                    MessageBox.Show("Количество не может быть меньше 1");
+                    countBooks = int.Parse(Microsoft.VisualBasic.Interaction.InputBox("Введите количество книг"));
+                }
+                treeView1.Nodes.Add(nameLang).Tag = countBooks;
+
+            }
+            catch (Exception) { }
+        }
+
+        private void goToBook_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                Process.Start(listView1.SelectedItems[0].SubItems[4].Text);
+            }
+            catch (Exception) { }
+        }
+
+        void GiveMainLang()
+        {
+            treeView1.Nodes.Add("Python").Tag = 30;
+            treeView1.Nodes.Add("Java").Tag = 30;
+            treeView1.Nodes.Add("JavaScript").Tag = 30;
+            treeView1.Nodes.Add("Kotlin").Tag = 30;
+        }
         private void searchRegex_Click(object sender, EventArgs e)
         {
             try
@@ -137,61 +174,32 @@ namespace File_manager
             }
         }
 
-        //Получение дисков
-        private void TakeDisk()
+        private void WriteChild(TreeNode a) //Получение всех папок и файлов и заненсение их в дерево
         {
-            try {
-                foreach (DriveInfo drive in DriveInfo.GetDrives())
+            
+            try
+            {
+                List<Book> resultBooks = Parser.Parse(a.Text, Convert.ToInt32(a.Tag));
+                listView1.Items.Clear();
+                if (resultBooks != null)
                 {
-                    TreeNode driveNode = new TreeNode(drive.Name);
-                    treeView1.Nodes.Add(driveNode);
-                    driveNode.Name = driveNode.Text;
-
+                    foreach (var book in resultBooks)
+                        listView1.Items.Add(new ListViewItem(new[] { book.Name, book.Author, book.Rating, book.Price, book.Link }));
                 }
             }
             catch (Exception) { }
         }
-
-        //Папок и файлы, заненсение их в дерево
-        private void WriteChild(TreeNode a)
+        void treeView1_MouseDown(object sender, MouseEventArgs e)// Обработка двойного клика по файлу
         {
             try
             {
-                string[] dirs = Directory.GetDirectories(a.Text);
+                TreeNode node = treeView1.SelectedNode;
+                WriteChild(node);
 
-                if (true)
-                {
-                    foreach (string dir in dirs)
-                    {
-                        TreeNode newNode = new TreeNode(dir);
-                        a.Nodes.Add(newNode);
-
-                        newNode.Name = newNode.Text;
-                        newNode.Text = dir.Remove(0, dir.LastIndexOf('\\') + 1);
-                        int leng = newNode.Name.Length - 4;
-                        if (newNode.Name[leng] == '.' && newNode.Name[leng + 1] == 'z' && newNode.Name[leng + 2] == 'i' && newNode.Name[leng + 3] == 'p')
-                            newNode.ImageIndex = 0;
-                    }
-                }
-                string[] files = Directory.GetFiles(a.Text);
-                if (true)
-                {
-                    foreach (string s in files)
-                    {
-                        TreeNode newNode = new TreeNode(s);
-                        newNode.Name = s.Substring(s.IndexOf('\\') + 1);
-                        newNode.ImageIndex = 1;
-                        a.Nodes.Add(newNode);
-                        newNode.Name = newNode.Text;
-                        int leng = newNode.Name.Length - 4;
-                        newNode.Text = s.Remove(0, s.LastIndexOf('\\') + 1);
-                        if (newNode.Name[leng] == '.' && newNode.Name[leng + 1] == 'z' && newNode.Name[leng + 2] == 'i' && newNode.Name[leng + 3] == 'p')
-                            newNode.ImageIndex = 2;
-                    }
-                }
             }
             catch (Exception) { }
         }
+
         void createDirMenuItem_Click(object sender, EventArgs e)
         {
             try
@@ -353,23 +361,6 @@ namespace File_manager
                 nod = treeView1.SelectedNode;
                 flag = 1;
                 MessageBox.Show("Скопировано");
-            }
-            catch (Exception) { }
-        }
-
-        // Двойной клик по файлу
-        void treeView1_MouseDown(object sender, MouseEventArgs e)
-        {
-            try {
-                string url;
-                TreeNode node = treeView1.SelectedNode;
-                url = node.Text;
-                node.Nodes.Clear();
-                node.Text = node.Name;
-                WriteChild(node);
-                node.Text = url;
-                treeView1.SelectedNode.Expand();
-
             }
             catch (Exception) { }
         }
