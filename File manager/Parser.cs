@@ -42,7 +42,7 @@ namespace File_manager
                                     book.Author = "-";
                                 book.Price = table.SelectSingleNode(".//span[@class='a-offscreen']") == null ? "null" : table.SelectSingleNode(".//span[@class='a-offscreen']").InnerText;
                                 if (book.Price == "null")
-                                    book.Price = "-";
+                                    book.Price = "$00.00";
                                 book.Rating = table.SelectSingleNode(".//span[@class='a-icon-alt']") == null ? "null" : table.SelectSingleNode(".//span[@class='a-icon-alt']").InnerText.Substring(0, 3);
                                 if (book.Rating == "null")
                                     book.Rating = "-";
