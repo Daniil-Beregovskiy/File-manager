@@ -35,9 +35,17 @@ namespace File_manager
                             {
                                 Book book = new Book();
                                 book.Name = table.SelectSingleNode(".//span[@class='a-size-base-plus a-color-base a-text-normal']") == null ? "null" : table.SelectSingleNode(".//span[@class='a-size-base-plus a-color-base a-text-normal']").InnerText;
+                                if (book.Name == "null")
+                                    book.Name = "-";
                                 book.Author = table.SelectSingleNode(".//a[@class='a-size-base a-link-normal']") == null ? "null" : table.SelectSingleNode(".//a[@class='a-size-base a-link-normal']").InnerText;
+                                if (book.Author == "null")
+                                    book.Author = "-";
                                 book.Price = table.SelectSingleNode(".//span[@class='a-offscreen']") == null ? "null" : table.SelectSingleNode(".//span[@class='a-offscreen']").InnerText;
+                                if (book.Price == "null")
+                                    book.Price = "-";
                                 book.Rating = table.SelectSingleNode(".//span[@class='a-icon-alt']") == null ? "null" : table.SelectSingleNode(".//span[@class='a-icon-alt']").InnerText.Substring(0, 3);
+                                if (book.Rating == "null")
+                                    book.Rating = "-";
                                 book.Link = table.SelectSingleNode(".//a[@class='a-link-normal a-text-normal']") == null ? "null" : "http://amazon.com" + table.SelectSingleNode(".//a[@class='a-link-normal a-text-normal']").Attributes["href"].Value;
                                 resultBooks.Add(book);
                             }
