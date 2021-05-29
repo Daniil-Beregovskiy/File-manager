@@ -33,40 +33,28 @@ namespace File_manager
             treeView1.Nodes.Add("C#");
         }
 
-        // двойное нажатие по книге
-        private void listView1_DoubleClick(object sender, EventArgs e) 
+        // двойной клик по языку
+        void treeView1_MouseDown(object sender, MouseEventArgs e)
         {
             try
             {
-                Process.Start(listView1.SelectedItems[0].SubItems[4].Text);
-            }
-            catch (Exception) { }
-        }
-
-        //Получение всех книг
-        private void WriteChild(TreeNode a)
-        {
-            try
-            {
-                List<Book> resultBooks = Parser.Parse(a.Text, Convert.ToInt32(textBox2.Text));
+                List<Books> books_for_view = Extracter.Extract(treeView1.SelectedNode.Text, Convert.ToInt32(textBox2.Text));
                 listView1.Items.Clear();
-                if (resultBooks != null)
+                if (books_for_view != null)
                 {
-                    foreach (var book in resultBooks)
+                    foreach (var book in books_for_view)
                         listView1.Items.Add(new ListViewItem(new[] { book.Name, book.Author, book.Rating, book.Price, book.Link }));
                 }
             }
             catch (Exception) { }
         }
 
-        // двойной клик по языку
-        void treeView1_MouseDown(object sender, MouseEventArgs e)
+        // двойное нажатие по книге
+        private void listView1_DoubleClick(object sender, EventArgs e) 
         {
             try
             {
-                TreeNode node = treeView1.SelectedNode;
-                WriteChild(node);
-
+                Process.Start(listView1.SelectedItems[0].SubItems[4].Text);
             }
             catch (Exception) { }
         }

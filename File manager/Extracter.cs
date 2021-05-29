@@ -8,32 +8,37 @@ using System.Threading.Tasks;
 
 namespace File_manager
 {
-    public class Parser
+    public class Extracter
     {
-        public static List<Book> Parse(string nameLang, int count)
+        public static List<Books> Extract(string title_book, int count)
         {
             try
             {
-                List<Book> resultBooks = new List<Book>();
+                // готовимся
+                List<Books> books_for_view = new List<Books>();
                 var address = $"https://www.amazon.com/";
-                var chromeOptions = new ChromeOptions();
-                chromeOptions.AddArgument("disable-extensions");
-                chromeOptions.AddArgument("headless");
-                using (var browser = new ChromeDriver(chromeOptions))
+                var chrome = new ChromeOptions();
+                chrome.AddArgument("disable-extensions");
+                chrome.AddArgument("headless");
+
+                using (var browser = new ChromeDriver(chrome))
                 {
+                    // качаем страничку
                     browser.Navigate().GoToUrl(address);
                     IWebElement searchInput = browser.FindElement(By.Id("twotabsearchtextbox"));
-                    searchInput.SendKeys(nameLang + OpenQA.Selenium.Keys.Enter);
+                    searchInput.SendKeys(title_book + OpenQA.Selenium.Keys.Enter);
                     HtmlAgilityPack.HtmlDocument doc = new HtmlAgilityPack.HtmlDocument();
                     doc.LoadHtml(browser.PageSource);
-                    var tables = doc.DocumentNode.SelectNodes(".//div[@class='sg-col-4-of-12 s-result-item s-asin sg-col-4-of-16 sg-col sg-col-4-of-20']");
-                    if (tables != null)
+                    var page = doc.DocumentNode.SelectNodes(".//div[@class='sg-col-4-of-12 s-result-item s-asin sg-col-4-of-16 sg-col sg-col-4-of-20']");
+
+                    if (page != null)
                     {
-                        foreach (var table in tables)
+                        // проходимся по страничке
+                        foreach (var table in page)
                         {
-                            if (resultBooks.Count < count)
+                            if (books_for_view.Count < count)
                             {
-                                Book book = new Book();
+                                Books book = new Books();
                                 book.Name = table.SelectSingleNode(".//span[@class='a-size-base-plus a-color-base a-text-normal']") == null ? "null" : table.SelectSingleNode(".//span[@class='a-size-base-plus a-color-base a-text-normal']").InnerText;
                                 if (book.Name == "null")
                                     book.Name = "-";
@@ -47,12 +52,13 @@ namespace File_manager
                                 if (book.Rating == "null")
                                     book.Rating = "-";
                                 book.Link = table.SelectSingleNode(".//a[@class='a-link-normal a-text-normal']") == null ? "null" : "http://amazon.com" + table.SelectSingleNode(".//a[@class='a-link-normal a-text-normal']").Attributes["href"].Value;
-                                resultBooks.Add(book);
+                                books_for_view.Add(book);
                             }
                         }
                     }
                 }
-                return resultBooks;
+
+                return books_for_view;
             }
             catch (Exception) { return null; }
         }
