@@ -1,24 +1,7 @@
-﻿using Microsoft.VisualBasic.FileIO;
-using System;
+﻿using System;
 using System.Diagnostics;
-using System.IO;
-using System.IO.Compression;
-using System.Linq;
-using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using System.Windows.Forms;
-using OpenQA.Selenium;
-using OpenQA.Selenium.Chrome;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Drawing;
-using System.Net;
-using System.Net.Http;
-using System.Runtime.Serialization;
-using System.Runtime.Serialization.Formatters.Binary;
-using System.Security.Cryptography;
-using System.Text;
-using System.Threading;
 
 namespace File_manager
 {
@@ -35,7 +18,8 @@ namespace File_manager
             custom = Сustomization.GetSettings();
             GiveSetting();
             Login(havePas);
-            this.WindowState = FormWindowState.Maximized;
+            WindowState = FormWindowState.Maximized;
+            WindowState = FormWindowState.Normal;
 
             ToolStripMenuItem changeBackColor = new ToolStripMenuItem("Изменить задний фон");
             ToolStripMenuItem changeFont = new ToolStripMenuItem("Изменить шрифт");
@@ -47,7 +31,6 @@ namespace File_manager
             treeView1.Nodes.Add("JavaScript");
             treeView1.Nodes.Add("Kotlin");
             treeView1.Nodes.Add("C#");
-            WindowState = FormWindowState.Normal;
         }
 
         // двойное нажатие по книге
@@ -60,39 +43,9 @@ namespace File_manager
             catch (Exception) { }
         }
 
-        private void GiveSetting()
-        {
-            treeView1.BackColor = custom.backColor;
-            listView1.BackColor = custom.backColor;
-            treeView1.Font = custom.font;
-            listView1.Font = custom.font;
-            havePas = custom.havePas;
-            login = custom.login;
-            pass = custom.password;
-        }
-        private void Login(int HavePas)
-        {
-            if (HavePas == 1)
-            {
-                string loginCheck = Microsoft.VisualBasic.Interaction.InputBox("Логин");
-                while (loginCheck != login)
-                {
-                    MessageBox.Show("Неверный логин");
-                    loginCheck = Microsoft.VisualBasic.Interaction.InputBox("Логин");
-                }
-                string passwordCheck = Microsoft.VisualBasic.Interaction.InputBox("Пароль");
-                while (passwordCheck != pass)
-                {
-                    MessageBox.Show("Неверный пароль");
-                    passwordCheck = Microsoft.VisualBasic.Interaction.InputBox("Пароль");
-                }
-            }
-        }
-
         //Получение всех книг
         private void WriteChild(TreeNode a)
         {
-            
             try
             {
                 List<Book> resultBooks = Parser.Parse(a.Text, Convert.ToInt32(textBox2.Text));
@@ -116,6 +69,44 @@ namespace File_manager
 
             }
             catch (Exception) { }
+        }
+
+        // добавить язык
+        private void button2_Click(object sender, EventArgs e)
+        {
+            treeView1.Nodes.Add(textBox1.Text);
+        }
+
+        // получение настроек фона, шрифта, логина и пароля
+        private void GiveSetting()
+        {
+            treeView1.BackColor = custom.backColor;
+            listView1.BackColor = custom.backColor;
+            treeView1.Font = custom.font;
+            listView1.Font = custom.font;
+            havePas = custom.havePas;
+            login = custom.login;
+            pass = custom.password;
+        }
+
+        // ввод логина и пароля, если таковые присутствуют
+        private void Login(int HavePas)
+        {
+            if (HavePas == 1)
+            {
+                string loginCheck = Microsoft.VisualBasic.Interaction.InputBox("Логин");
+                while (loginCheck != login)
+                {
+                    MessageBox.Show("Неверный логин");
+                    loginCheck = Microsoft.VisualBasic.Interaction.InputBox("Логин");
+                }
+                string passwordCheck = Microsoft.VisualBasic.Interaction.InputBox("Пароль");
+                while (passwordCheck != pass)
+                {
+                    MessageBox.Show("Неверный пароль");
+                    passwordCheck = Microsoft.VisualBasic.Interaction.InputBox("Пароль");
+                }
+            }
         }
 
         // задний фон
@@ -176,12 +167,6 @@ namespace File_manager
             {
                 e.Handled = true;
             }
-        }
-
-        // добавить язык
-        private void button2_Click(object sender, EventArgs e)
-        {
-            treeView1.Nodes.Add(textBox1.Text);
         }
     }
 }
