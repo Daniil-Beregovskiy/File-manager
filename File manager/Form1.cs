@@ -38,7 +38,6 @@ namespace File_manager
             GiveSetting();
             Login(havePas);
             this.WindowState = FormWindowState.Maximized;
-            GiveMainLang();
 
             ToolStripMenuItem changeBackColor = new ToolStripMenuItem("Изменить задний фон");
             ToolStripMenuItem changeFont = new ToolStripMenuItem("Изменить шрифт");
@@ -49,14 +48,19 @@ namespace File_manager
             setPassword.Click += setPassword_Click;
             removePassword.Click += removePassword_Click;
 
+            textBox2.Text = "30";
             ToolStripMenuItem searchNewBooks = new ToolStripMenuItem("Искать новые книги");
             contextMenuStrip1.Items.AddRange(new[] { searchNewBooks });
             treeView1.ContextMenuStrip = contextMenuStrip1;
-            searchNewBooks.Click += searchNewBooks_Click;
             changeBackColor.Click += changeBackColor_Click;
             changeFont.Click += changeFont_Click;
             setPassword.Click += setPassword_Click;
             removePassword.Click += removePassword_Click;
+
+            treeView1.Nodes.Add("Java");
+            treeView1.Nodes.Add("JavaScript");
+            treeView1.Nodes.Add("Kotlin");
+            treeView1.Nodes.Add("C#");
 
             /*ToolStripMenuItem goToBook = new ToolStripMenuItem("Открыть в браузере");
             contextMenuStrip3.Items.AddRange(new[] { goToBook });
@@ -66,23 +70,6 @@ namespace File_manager
             this.WindowState = System.Windows.Forms.FormWindowState.Normal;
         }
 
-        private void searchNewBooks_Click(object sender, EventArgs e)
-        {
-            try
-            {
-                string nameLang = Microsoft.VisualBasic.Interaction.InputBox("Введите навзвание языка");
-                int countBooks = int.Parse(Microsoft.VisualBasic.Interaction.InputBox("Введите количество книг"));
-                while (countBooks < 1)
-                {
-                    MessageBox.Show("Количество не может быть меньше 1");
-                    countBooks = int.Parse(Microsoft.VisualBasic.Interaction.InputBox("Введите количество книг"));
-                }
-                treeView1.Nodes.Add(nameLang).Tag = countBooks;
-
-            }
-            catch (Exception) { }
-        }
-
         private void listView1_DoubleClick(object sender, EventArgs e)
         {
             try
@@ -90,14 +77,6 @@ namespace File_manager
                 Process.Start(listView1.SelectedItems[0].SubItems[4].Text);
             }
             catch (Exception) { }
-        }
-
-        void GiveMainLang()
-        {
-            treeView1.Nodes.Add("Python").Tag = 30;
-            treeView1.Nodes.Add("Java").Tag = 30;
-            treeView1.Nodes.Add("JavaScript").Tag = 30;
-            treeView1.Nodes.Add("Kotlin").Tag = 30;
         }
         private void searchRegex_Click(object sender, EventArgs e)
         {
@@ -177,7 +156,7 @@ namespace File_manager
             
             try
             {
-                List<Book> resultBooks = Parser.Parse(a.Text, Convert.ToInt32(a.Tag));
+                List<Book> resultBooks = Parser.Parse(a.Text, Convert.ToInt32(textBox2.Text));
                 listView1.Items.Clear();
                 if (resultBooks != null)
                 {
@@ -531,6 +510,37 @@ namespace File_manager
         private void button2_Click_1(object sender, EventArgs e) // задний фон
         {
 
+        }
+
+        private void textBox1_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void label1_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void textBox2_KeyPress(object sender, KeyPressEventArgs e)
+        {
+
+            char number = e.KeyChar;
+
+            if (!Char.IsDigit(number) && number != '\b')
+            {
+                e.Handled = true;
+            }
+        }
+
+        private void textBox2_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+            treeView1.Nodes.Add(textBox1.Text);
         }
     }
 }
