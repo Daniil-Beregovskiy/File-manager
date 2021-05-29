@@ -57,10 +57,11 @@ namespace File_manager
             changeFont.Click += changeFont_Click;
             setPassword.Click += setPassword_Click;
             removePassword.Click += removePassword_Click;
-            ToolStripMenuItem goToBook = new ToolStripMenuItem("Открыть в браузере");
+
+            /*ToolStripMenuItem goToBook = new ToolStripMenuItem("Открыть в браузере");
             contextMenuStrip3.Items.AddRange(new[] { goToBook });
             listView1.ContextMenuStrip = contextMenuStrip3;
-            goToBook.Click += goToBook_Click;
+            goToBook.Click += goToBook_Click;*/
 
             this.WindowState = System.Windows.Forms.FormWindowState.Normal;
         }
@@ -82,7 +83,7 @@ namespace File_manager
             catch (Exception) { }
         }
 
-        private void goToBook_Click(object sender, EventArgs e)
+        private void listView1_DoubleClick(object sender, EventArgs e)
         {
             try
             {
@@ -105,14 +106,12 @@ namespace File_manager
                 TreeNode node = treeView1.SelectedNode;
                 string regex = Microsoft.VisualBasic.Interaction.InputBox("Введите выражение");
                 Regex newRegex = new Regex(@regex);
-                comboBox1.Items.Clear();
                 if (File.Exists(node.Name))
                 {
                     using (StreamReader sr = new StreamReader(node.Name))
                     {
                         foreach (Match mch in newRegex.Matches(sr.ReadToEnd()))
                         {
-                            comboBox1.Items.Add(mch);
                         }
                     }
                 }
@@ -130,7 +129,6 @@ namespace File_manager
                                         .ToArray();
                                 this.Invoke((Action)delegate
                                 {
-                                    comboBox1.Items.AddRange(matches);
                                 }
                                 );
                             }
