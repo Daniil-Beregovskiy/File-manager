@@ -73,46 +73,46 @@ namespace File_manager
             try
             {
                 TreeNode node = treeView1.SelectedNode;
-                string regex = Microsoft.VisualBasic.Interaction.InputBox("Введите регулярное выражение");
-                if (regex != "")
+                string regular = Microsoft.VisualBasic.Interaction.InputBox("Введите регулярное выражение");
+                if (regular != "")
                 {
                     listBox1.Items.Clear();
-                    RegexSearch(node.Name, regex);
+                    Regular_Search(node.Name, regular);
                 }
             }
             catch (Exception) { }
         }
 
         // сама функция поиска
-        private void RegexSearch(string filename, string newRegex)
+        private void Regular_Search(string file, string regular)
         {
             // если файл, да ещё и текстовый, то ищем в файле
-            if (File.Exists(filename))
+            if (File.Exists(file))
             {
-                if (Path.GetExtension(filename) == ".txt" || Path.GetExtension(filename) == ".text" || Path.GetExtension(filename) == ".doc" || Path.GetExtension(filename) == ".docx")
+                if (Path.GetExtension(file) == ".txt" || Path.GetExtension(file) == ".text" || Path.GetExtension(file) == ".doc" || Path.GetExtension(file) == ".docx")
                 {
-                    using (StreamReader sr = new StreamReader(filename))
+                    using (StreamReader Str_Read = new StreamReader(file))
                     {
-                        Match[] matches = Regex.Matches(sr.ReadToEnd(), newRegex)
+                        Match[] matches = Regex.Matches(Str_Read.ReadToEnd(), regular)
                                             .Cast<Match>()
                                             .ToArray();
                         this.BeginInvoke((Action)delegate
                         {
                             foreach (Match match in matches)
-                                listBox1.Items.Add(filename + " - " + match);
+                                listBox1.Items.Add(file + " - " + match);
                         }
                         );
                     }
                 }
             }
             // если папка, то рекурсией по элементам в папки
-            else if (Directory.Exists(filename))
+            else if (Directory.Exists(file))
             {
-                string[] files = Directory.GetFiles(filename);
-                string[] directories = Directory.GetDirectories(filename);
+                string[] files = Directory.GetFiles(file);
+                string[] directories = Directory.GetDirectories(file);
                 Parallel.ForEach(files, currentFile =>
                 {
-                    RegexSearch(currentFile, newRegex);
+                    Regular_Search(currentFile, regular);
                 }
                 );
 
@@ -120,7 +120,7 @@ namespace File_manager
                 {
                     Parallel.ForEach(directories, dir =>
                     {
-                        RegexSearch(dir, newRegex);
+                        Regular_Search(dir, regular);
                     }
                 );
                 }
@@ -133,13 +133,13 @@ namespace File_manager
             try
             {
                 TreeNode node = treeView1.SelectedNode;
-                string url = Microsoft.VisualBasic.Interaction.InputBox("Введите ссылку на файл");
-                if (url != "")
+                string link = Microsoft.VisualBasic.Interaction.InputBox("Введите ссылку на файл");
+                if (link != "")
                 {
                     string downFilename = Microsoft.VisualBasic.Interaction.InputBox("Введите название фала с расширением");
                     WebClient client = new WebClient();
                     webClients.Add(client);
-                    client.DownloadFileAsync(new Uri(url), $"{node.Name}\\{downFilename}");
+                    client.DownloadFileAsync(new Uri(link), $"{node.Name}\\{downFilename}");
                     TreeNode newNode = new TreeNode("");
                     newNode.Text = $"{downFilename}";
                     newNode.Name = $"{node.Name}\\{downFilename}";
