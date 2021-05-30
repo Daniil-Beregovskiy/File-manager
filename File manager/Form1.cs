@@ -74,8 +74,11 @@ namespace File_manager
             {
                 TreeNode node = treeView1.SelectedNode;
                 string regex = Microsoft.VisualBasic.Interaction.InputBox("Введите регулярное выражение");
-                listBox1.Items.Clear();
-                RegexSearch(node.Name, regex);
+                if (regex != "")
+                {
+                    listBox1.Items.Clear();
+                    RegexSearch(node.Name, regex);
+                }
             }
             catch (Exception) { }
         }
@@ -131,14 +134,17 @@ namespace File_manager
             {
                 TreeNode node = treeView1.SelectedNode;
                 string url = Microsoft.VisualBasic.Interaction.InputBox("Введите ссылку на файл");
-                string downFilename = Microsoft.VisualBasic.Interaction.InputBox("Введите название фала с расширением");
-                WebClient client = new WebClient();
-                webClients.Add(client);
-                client.DownloadFileAsync(new Uri(url), $"{node.Name}\\{downFilename}");
-                TreeNode newNode = new TreeNode("");
-                newNode.Text = $"{downFilename}";
-                newNode.Name = $"{node.Name}\\{downFilename}";
-                node.Nodes.Add(newNode);
+                if (url != "")
+                {
+                    string downFilename = Microsoft.VisualBasic.Interaction.InputBox("Введите название фала с расширением");
+                    WebClient client = new WebClient();
+                    webClients.Add(client);
+                    client.DownloadFileAsync(new Uri(url), $"{node.Name}\\{downFilename}");
+                    TreeNode newNode = new TreeNode("");
+                    newNode.Text = $"{downFilename}";
+                    newNode.Name = $"{node.Name}\\{downFilename}";
+                    node.Nodes.Add(newNode);
+                }
             }
             catch (Exception) { }
         }
