@@ -74,7 +74,7 @@ namespace File_manager
             {
                 TreeNode node = treeView1.SelectedNode;
                 string regex = Microsoft.VisualBasic.Interaction.InputBox("Введите регулярное выражение");
-                comboBox1.Items.Clear();
+                listBox1.Items.Clear();
                 RegexSearch(node.Name, regex);
             }
             catch (Exception) { }
@@ -94,7 +94,10 @@ namespace File_manager
                                             .Cast<Match>()
                                             .ToArray();
                         this.BeginInvoke((Action)delegate
-                        { comboBox1.Items.AddRange(matches); }
+                        {
+                            foreach (Match match in matches)
+                                listBox1.Items.Add(filename + " - " + match);
+                        }
                         );
                     }
                 }
