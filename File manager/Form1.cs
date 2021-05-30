@@ -1,21 +1,14 @@
 ﻿using Microsoft.VisualBasic.FileIO;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using System.Net;
-using System.Net.Sockets;
-using System.Runtime.Serialization;
-using System.Runtime.Serialization.Formatters.Binary;
-using System.Security.Cryptography;
-using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading;
-using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Threading.Tasks;
 
 namespace File_manager
 {
@@ -38,8 +31,10 @@ namespace File_manager
             this.WindowState = FormWindowState.Maximized;
             TakeDisk();
             webClients = new List<WebClient>();
+            WindowState = FormWindowState.Normal;
 
             // правая кнопка мыши по файлу/папке
+            #region right click
             ToolStripMenuItem createDirMenuItem = new ToolStripMenuItem("Создать папку");
             ToolStripMenuItem renameMenuItem = new ToolStripMenuItem("Переименовать");
             ToolStripMenuItem deleteMenuItem = new ToolStripMenuItem("Удалить");
@@ -69,9 +64,10 @@ namespace File_manager
             searchRegex.Click += searchRegex_Click;
             downoloadFile.Click += downoloadFile_Click;
             canselDownoload.Click += canselDownoload_Click;
+            #endregion
         }
 
-        // Поиск по регулярочке
+        // Вызов функции при нажатии
         private void searchRegex_Click(object sender, EventArgs e)
         {
             try
@@ -79,24 +75,50 @@ namespace File_manager
                 TreeNode node = treeView1.SelectedNode;
                 string regex = Microsoft.VisualBasic.Interaction.InputBox("Введите регулярное выражение");
                 comboBox1.Items.Clear();
+                RegexSearch(node.Name, regex);
+            }
+            catch (Exception) { }
+        }
 
-                if (File.Exists(node.Name))
+        // сама функция поиска
+        private void RegexSearch(string filename, string newRegex)
+        {
+            // если файл, да ещё и текстовый, то ищем в файле
+            if (File.Exists(filename))
+            {
+                if (Path.GetExtension(filename) == ".txt" || Path.GetExtension(filename) == ".text" || Path.GetExtension(filename) == ".doc" || Path.GetExtension(filename) == ".docx")
                 {
-                    if (Path.GetExtension(node.Name) == ".txt" || Path.GetExtension(node.Name) == ".text" || Path.GetExtension(node.Name) == ".doc" || Path.GetExtension(node.Name) == ".docx")
+                    using (StreamReader sr = new StreamReader(filename))
                     {
-                        using (StreamReader sr = new StreamReader(node.Name))
-                        {
-                            Match[] matches = Regex.Matches(sr.ReadToEnd(), regex)
-                                                .Cast<Match>()
-                                                .ToArray();
-                            this.BeginInvoke((Action)delegate
-                            { comboBox1.Items.AddRange(matches); }
-                            );
-                        }
+                        Match[] matches = Regex.Matches(sr.ReadToEnd(), newRegex)
+                                            .Cast<Match>()
+                                            .ToArray();
+                        this.BeginInvoke((Action)delegate
+                        { comboBox1.Items.AddRange(matches); }
+                        );
                     }
                 }
             }
-            catch (Exception) { }
+            // если папка, то рекурсией по элементам в папки
+            else if (Directory.Exists(filename))
+            {
+                string[] files = Directory.GetFiles(filename);
+                string[] directories = Directory.GetDirectories(filename);
+                Parallel.ForEach(files, currentFile =>
+                {
+                    RegexSearch(currentFile, newRegex);
+                }
+                );
+
+                if (directories != null && directories.Length > 0)
+                {
+                    Parallel.ForEach(directories, dir =>
+                    {
+                        RegexSearch(dir, newRegex);
+                    }
+                );
+                }
+            }
         }
 
         // скачивание файла
