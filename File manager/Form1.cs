@@ -1,10 +1,19 @@
 ﻿using Microsoft.VisualBasic.FileIO;
 using System;
+using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
+using System.Net;
+using System.Net.Sockets;
+using System.Runtime.Serialization;
+using System.Runtime.Serialization.Formatters.Binary;
+using System.Security.Cryptography;
+using System.Text;
 using System.Text.RegularExpressions;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -19,6 +28,7 @@ namespace File_manager
         Сustomization custom = new Сustomization();
         public string login;
         string password;
+        List<WebClient> webClients;
         public Form1()
         {
             InitializeComponent();
@@ -27,6 +37,9 @@ namespace File_manager
             Login(havePas);
             this.WindowState = FormWindowState.Maximized;
             TakeDisk();
+            webClients = new List<WebClient>();
+
+            // правая кнопка мыши по файлу/папке
             ToolStripMenuItem createDirMenuItem = new ToolStripMenuItem("Создать папку");
             ToolStripMenuItem renameMenuItem = new ToolStripMenuItem("Переименовать");
             ToolStripMenuItem deleteMenuItem = new ToolStripMenuItem("Удалить");
@@ -37,8 +50,11 @@ namespace File_manager
             ToolStripMenuItem copyMenuItem = new ToolStripMenuItem("Скопировать");
             ToolStripMenuItem pasteMenuItem = new ToolStripMenuItem("Вставить");
             ToolStripMenuItem openMenuItem = new ToolStripMenuItem("Открыть");
-            ToolStripMenuItem searchRegex = new ToolStripMenuItem("Поиск по выражению");
-            contextMenuStrip1.Items.AddRange(new[] { createDirMenuItem, renameMenuItem, deleteMenuItem, archiveMenuItem, antiArchiveMenuItem, moveFromMenuItem, moveMenuItem, copyMenuItem, pasteMenuItem, openMenuItem, searchRegex });
+            ToolStripMenuItem searchRegex = new ToolStripMenuItem("Поиск по регулярному выражению");
+            ToolStripMenuItem downoloadFile = new ToolStripMenuItem("Скачать файл сюда");
+            ToolStripMenuItem canselDownoload = new ToolStripMenuItem("Отмениит скачивание файла");
+
+            contextMenuStrip1.Items.AddRange(new[] { createDirMenuItem, renameMenuItem, deleteMenuItem, archiveMenuItem, antiArchiveMenuItem, moveFromMenuItem, moveMenuItem, copyMenuItem, pasteMenuItem, openMenuItem, searchRegex, downoloadFile, canselDownoload });
             treeView1.ContextMenuStrip = contextMenuStrip1;
             createDirMenuItem.Click += createDirMenuItem_Click;
             renameMenuItem.Click += renameMenuItem_Click;
@@ -51,62 +67,67 @@ namespace File_manager
             pasteMenuItem.Click += pasteMenuItem_Click;
             openMenuItem.Click += openMenuItem_Click;
             searchRegex.Click += searchRegex_Click;
-            ToolStripMenuItem changeBackColor = new ToolStripMenuItem("Изменить задний фон");
-            ToolStripMenuItem changeFont = new ToolStripMenuItem("Изменить шрифт");
-            ToolStripMenuItem setPassword = new ToolStripMenuItem("Установить логин и пароль");
-            ToolStripMenuItem removePassword = new ToolStripMenuItem("Убрать логин и пароль");
-            changeBackColor.Click += changeBackColor_Click;
-            changeFont.Click += changeFont_Click;
-            setPassword.Click += setPassword_Click;
-            removePassword.Click += removePassword_Click;
+            downoloadFile.Click += downoloadFile_Click;
+            canselDownoload.Click += canselDownoload_Click;
         }
 
+        // Поиск по регулярочке
         private void searchRegex_Click(object sender, EventArgs e)
         {
             try
             {
                 TreeNode node = treeView1.SelectedNode;
-                string regex = Microsoft.VisualBasic.Interaction.InputBox("Введите выражение");
-                Regex newRegex = new Regex(@regex);
+                string regex = Microsoft.VisualBasic.Interaction.InputBox("Введите регулярное выражение");
                 comboBox1.Items.Clear();
+
                 if (File.Exists(node.Name))
                 {
-                    using (StreamReader sr = new StreamReader(node.Name))
+                    if (Path.GetExtension(node.Name) == ".txt" || Path.GetExtension(node.Name) == ".text" || Path.GetExtension(node.Name) == ".doc" || Path.GetExtension(node.Name) == ".docx")
                     {
-                        foreach (Match mch in newRegex.Matches(sr.ReadToEnd()))
+                        using (StreamReader sr = new StreamReader(node.Name))
                         {
-                            comboBox1.Items.Add(mch);
+                            Match[] matches = Regex.Matches(sr.ReadToEnd(), regex)
+                                                .Cast<Match>()
+                                                .ToArray();
+                            this.BeginInvoke((Action)delegate
+                            { comboBox1.Items.AddRange(matches); }
+                            );
                         }
                     }
                 }
-                else if (Directory.Exists(node.Name))
-                {
-                    string[] files = Directory.GetFiles(node.Name);
-                    Parallel.ForEach(files, currentFile =>
-                    {
-                        if (Path.GetExtension(currentFile) == ".txt")
-                        {
-                            using (StreamReader sr = new StreamReader(currentFile))
-                            {
-                                Match[] matches = Regex.Matches(sr.ReadToEnd(), regex)
-                                        .Cast<Match>()
-                                        .ToArray();
-                                this.Invoke((Action)delegate
-                                {
-                                    comboBox1.Items.AddRange(matches);
-                                }
-                                );
-                            }
-                        }
-                    }
-                    );
-                }
             }
-            catch (Exception)
-            {
-            }
+            catch (Exception) { }
         }
 
+        // скачивание файла
+        private void downoloadFile_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                TreeNode node = treeView1.SelectedNode;
+                string url = Microsoft.VisualBasic.Interaction.InputBox("Введите ссылку на файл");
+                string downFilename = Microsoft.VisualBasic.Interaction.InputBox("Введите название фала с расширением");
+                WebClient client = new WebClient();
+                webClients.Add(client);
+                client.DownloadFileAsync(new Uri(url), $"{node.Name}\\{downFilename}");
+                TreeNode newNode = new TreeNode("");
+                newNode.Text = $"{downFilename}";
+                newNode.Name = $"{node.Name}\\{downFilename}";
+                node.Nodes.Add(newNode);
+            }
+            catch (Exception) { }
+        }
+
+        // Отмена скачивания
+        private void canselDownoload_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                foreach (var client in webClients)
+                    client.CancelAsync();
+            }
+            catch (Exception) { }
+        }
 
         private void GiveSetting()
         {
@@ -158,7 +179,6 @@ namespace File_manager
                         newNode.Name = newNode.Text;
                         newNode.Text = dir.Remove(0, dir.LastIndexOf('\\') + 1);
                         int leng = newNode.Name.Length - 4;
-                        //Console.WriteLine(leng);
                         if (newNode.Name[leng] == '.' && newNode.Name[leng + 1] == 'z' && newNode.Name[leng + 2] == 'i' && newNode.Name[leng + 3] == 'p')
                             newNode.ImageIndex = 0;
                     }
@@ -348,7 +368,7 @@ namespace File_manager
         {
             TreeNode a = treeView1.SelectedNode;
             listView1.Items.Clear();
-
+            
                 string[] dirs = Directory.GetDirectories(a.Name);
                 foreach (string dir in dirs)
                 {
