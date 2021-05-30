@@ -159,6 +159,8 @@ namespace File_manager
         }
         private void TakeDisk() //Получение всех дисков
         {
+            try
+            {
                 foreach (DriveInfo drive in DriveInfo.GetDrives())
                 {
                     TreeNode driveNode = new TreeNode(drive.Name);
@@ -166,9 +168,13 @@ namespace File_manager
                     driveNode.Name = driveNode.Text;
 
                 }
+            }
+            catch (Exception) { }
         }
         private void WriteChild(TreeNode a) //Получение всех папок и файлов и заненсение их в дерево
         {
+            try
+            {
                 string[] dirs = Directory.GetDirectories(a.Text);
                 if (true)
                 {
@@ -199,11 +205,14 @@ namespace File_manager
                             newNode.ImageIndex = 2;
                     }
                 }
-            
+            }
+            catch (Exception) { }
 
         }
         void createDirMenuItem_Click(object sender, EventArgs e)
         {
+            try
+            {
                 TreeNode node = treeView1.SelectedNode;
                 string newName = Microsoft.VisualBasic.Interaction.InputBox("название папки");
                 Directory.CreateDirectory($"{node.Name}\\{newName}");
@@ -211,11 +220,14 @@ namespace File_manager
                 newNode.Text = $"{newName}";
                 newNode.Name = $"{node.Name}\\{newName}";
                 node.Nodes.Add(newNode);
-            
+            }
+            catch (Exception) { }
+
         }
         void renameMenuItem_Click(object sender, EventArgs e) //Переименование файла или папки
         {
-
+            try
+            {
                 TreeNode node = treeView1.SelectedNode;
                 string newName = Microsoft.VisualBasic.Interaction.InputBox("название файла");
                 if (File.Exists(node.Name))
@@ -231,10 +243,13 @@ namespace File_manager
                     node.Text = newName;
                     node.Name = node.Name.Substring(0, node.Name.LastIndexOf('\\') + 1) + newName;
                 }
+            }
+            catch (Exception) { }
         }
         void deleteMenuItem_Click(object sender, EventArgs e) //Удаление
         {
-
+            try
+            {
                 TreeNode node = treeView1.SelectedNode;
                 if (File.Exists(node.Name))
                 {
@@ -246,12 +261,14 @@ namespace File_manager
 
                 }
                 treeView1.Nodes.Remove(node);
-
+            }
+            catch (Exception) { }
 
         }
         void archiveMenuItem_Click(object sender, EventArgs e) //Архивирование
         {
-
+            try
+            {
                 TreeNode node = treeView1.SelectedNode;
                 if (File.Exists(node.Name))
                 {
@@ -272,10 +289,13 @@ namespace File_manager
                     node.Parent.Nodes.Add(archiveDirectory);
 
                 }
-
+            }
+            catch (Exception) { }
         }
         void antiArchiveMenuItem_Click(object sender, EventArgs e) //Разархивировния, реализовано только для файлов
         {
+            try
+            {
                 TreeNode node = treeView1.SelectedNode;
                 ZipFile.ExtractToDirectory(node.Name, node.Name.Substring(0, node.Name.LastIndexOf('\\')));
                 string[] files = Directory.GetFiles(node.Name.Substring(0, node.Name.LastIndexOf(".")));
@@ -286,24 +306,19 @@ namespace File_manager
                     newNode.Text = newNode.Name.Substring(newNode.Name.LastIndexOf('\\') + 1);
                     node.Parent.Nodes.Add(newNode);
                 }
-
+            }
+            catch (Exception) { }
         }
         public static void Compress(string sourceFile, string compressedFile)// Вспомогательный метод для архивирования файлов
         {
-            // поток для чтения исходного файла
-            using (FileStream sourceStream = new FileStream(sourceFile, FileMode.OpenOrCreate))
+            try
             {
-                // поток для записи сжатого файла
+                using (FileStream sourceStream = new FileStream(sourceFile, FileMode.OpenOrCreate))
                 using (FileStream targetStream = File.Create(compressedFile))
-                {
-                    // поток архивации
-                    using (GZipStream compressionStream = new GZipStream(targetStream, CompressionMode.Compress))
-                    {
-                        sourceStream.CopyTo(compressionStream); // копируем байты из одного потока в другой
-
-                    }
-                }
+                using (GZipStream compressionStream = new GZipStream(targetStream, CompressionMode.Compress))
+                    sourceStream.CopyTo(compressionStream);
             }
+            catch (Exception) { }
         }
         void moveFromMenuItem_Click(object sender, EventArgs e)// Обработка нажатия "переместить что"
         {
@@ -312,7 +327,8 @@ namespace File_manager
         }
         void moveMenuItem_Click(object sender, EventArgs e) //Перемещение
         {
-
+            try
+            {
                 if (flagMove == 1)
                 {
                     TreeNode node = treeView1.SelectedNode;
@@ -337,38 +353,45 @@ namespace File_manager
                     }
                     flagMove = 0;
                 }
-            
 
+            }
+            catch (Exception) { }
         }
         void copyMenuItem_Click(object sender, EventArgs e) //Копирование
         {
-
+            try
+            {
                 nod = treeView1.SelectedNode;
                 flag = 1;
                 MessageBox.Show("Скопировано");
-           
+            }
+            catch (Exception) { }
         }
-
-
 
         void treeView1_MouseDown(object sender, MouseEventArgs e)// Обработка двойного клика по файлу
         {
-            string url;
-            TreeNode node = treeView1.SelectedNode;
-            url = node.Text;
-            node.Nodes.Clear();
-            node.Text = node.Name;
-            WriteChild(node);
-            node.Text = url;
-            treeView1.SelectedNode.Expand();
+            try
+            {
+                string url;
+                TreeNode node = treeView1.SelectedNode;
+                url = node.Text;
+                node.Nodes.Clear();
+                node.Text = node.Name;
+                WriteChild(node);
+                node.Text = url;
+                treeView1.SelectedNode.Expand();
 
-
+            }
+            catch (Exception) { }
         }
         void treeView1_MouseClick(object sender, MouseEventArgs e)// Заполнение информации по файлу по клику
         {
-            TreeNode a = treeView1.SelectedNode;
-            listView1.Items.Clear();
-            
+            try
+            {
+
+                TreeNode a = treeView1.SelectedNode;
+                listView1.Items.Clear();
+
                 string[] dirs = Directory.GetDirectories(a.Name);
                 foreach (string dir in dirs)
                 {
@@ -389,6 +412,9 @@ namespace File_manager
                     listView1.Items.Add(new ListViewItem(new[] { newNode.Name, newNode.Name.Substring(newNode.Name.LastIndexOf('.') + 1), (new FileInfo(newNode.Name).Length).ToString(), File.GetCreationTime(newNode.Name).ToString() }));
 
                 }
+
+            }
+            catch (Exception) { }
         }
 
         private void Form1_FormClosing(object sender, EventArgs e)
@@ -399,7 +425,8 @@ namespace File_manager
         }
         private void pasteMenuItem_Click(object sender, EventArgs e)// Обработка "Вставить"
         {
-
+            try
+            {
                 if (flag == 1)
                 {
                     TreeNode node = treeView1.SelectedNode;
@@ -434,7 +461,8 @@ namespace File_manager
                         flag = 0;
                     }
                 }
-
+            }
+            catch (Exception) { }
         }
         private void openMenuItem_Click(object sender, EventArgs e)
         {
@@ -459,7 +487,7 @@ namespace File_manager
         }
         private void Form1_Load(object sender, EventArgs e)
         {
-            
+
         }
 
         private void listView1_SelectedIndexChanged(object sender, EventArgs e)
