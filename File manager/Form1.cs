@@ -601,28 +601,31 @@ namespace File_manager
         bool[] state_sort = { false, false, false, false };
         private void listView1_ColumnClick(object sender, ColumnClickEventArgs e)
         {
-            // переносим информацию в отдельный контейнер items
-            int N = listView1.Items.Count;
-            string[,] items = new string[N, 4];
-            for (int i = 0; i < listView1.Items.Count; i++)
-                for (int j = 0; j < 4; j++)
-                    items[i, j] = listView1.Items[i].SubItems[j].Text;
-            listView1.Items.Clear();
+            try
+            {
+                // переносим информацию в отдельный контейнер items
+                int N = listView1.Items.Count;
+                string[,] items = new string[N, 4];
+                for (int i = 0; i < listView1.Items.Count; i++)
+                    for (int j = 0; j < 4; j++)
+                        items[i, j] = listView1.Items[i].SubItems[j].Text;
+                listView1.Items.Clear();
 
-            // выбранный столбец
-            int k = e.Column;
-            state_sort[k] = !state_sort[k];
+                // выбранный столбец
+                int k = e.Column;
+                state_sort[k] = !state_sort[k];
 
-            // сортируем items
-            for (int i = 0; i < N; i++)
-                for (int j = 0; j < N - 1; j++)
-                    if (state_sort[k] == Сomparison(items[j, k], items[j + 1, k], k))
-                        swap(ref items, j);
+                // сортируем items
+                for (int i = 0; i < N; i++)
+                    for (int j = 0; j < N - 1; j++)
+                        if (state_sort[k] == Сomparison(items[j, k], items[j + 1, k], k))
+                            swap(ref items, j);
 
-            // добавялем items в listView
-            for (int i = 0; i < N; i++)
-                listView1.Items.Add(new ListViewItem(new[] { items[i, 0], items[i, 1], items[i, 2], items[i, 3] }));
-            
+                // добавялем items в listView
+                for (int i = 0; i < N; i++)
+                    listView1.Items.Add(new ListViewItem(new[] { items[i, 0], items[i, 1], items[i, 2], items[i, 3] }));
+            }
+            catch (Exception) { }
         }
     }
 }
