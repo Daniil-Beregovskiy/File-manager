@@ -1,5 +1,6 @@
 ﻿using Microsoft.VisualBasic.FileIO;
 using System;
+using System.Runtime;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -89,8 +90,7 @@ namespace File_manager
             // если файл, да ещё и текстовый, то ищем в файле
             if (File.Exists(file))
             {
-                if (Path.GetExtension(file) == ".txt" || Path.GetExtension(file) == ".text" || Path.GetExtension(file) == ".doc" || Path.GetExtension(file) == ".docx")
-                {
+
                     using (StreamReader Str_Read = new StreamReader(file))
                     {
                         Match[] matches = Regex.Matches(Str_Read.ReadToEnd(), regular)
@@ -102,7 +102,7 @@ namespace File_manager
                                 listBox1.Items.Add(file + " - " + match);
                         }
                         );
-                    }
+                    
                 }
             }
             // если папка, то рекурсией по элементам в папки
@@ -500,45 +500,6 @@ namespace File_manager
             TreeNode node = treeView1.SelectedNode;
             Process.Start(node.Name);
         }
-        private void changeBackColor_Click(object sender, EventArgs e)
-        {
-
-        }
-        private void changeFont_Click(object sender, EventArgs e)
-        {
-
-        }
-        private void setPassword_Click(object sender, EventArgs e)
-        {
-
-        }
-        private void removePassword_Click(object sender, EventArgs e)
-        {
-
-        }
-        private void Form1_Load(object sender, EventArgs e)
-        {
-
-        }
-
-        private void listView1_SelectedIndexChanged(object sender, EventArgs e)
-        {
-
-        }
-
-        private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
-        {
-
-        }
-
-        private void treeView1_AfterSelect(object sender, TreeViewEventArgs e)
-        {
-
-        }
-        private void button2_Click_1(object sender, EventArgs e) // задний фон
-        {
-
-        }
         private void button1_Click(object sender, EventArgs e) // задний фон
         {
             colorDialog1.Color = treeView1.BackColor;
@@ -581,6 +542,90 @@ namespace File_manager
 
             custom.havePas = havePas;
             custom.Save();
+        }
+
+        /*struct ViewItem
+        {
+            public string name, type, size, data;
+        }*/
+
+        static void swap(ref string[,] items, int j)
+        {
+            string[] temp = new string[4];
+
+            for (int k = 0; k < 4; k++)
+                temp[k] = items[j, k];
+
+            for (int k = 0; k < 4; k++)
+                items[j, k] = items[j + 1, k];
+
+            for (int k = 0; k < 4; k++)
+                items[j + 1, k] = temp[k];
+        }
+
+        bool Сomparison(string left, string right, int k)
+        {
+            if (k < 2)
+            {
+                if (String.Compare(left, right) < 0)
+                    return true;
+                else
+                    return false;
+            }
+            else if (k == 2)
+                return (right != "<DIR>" && (left == "<DIR>" || (Convert.ToInt64(left) < Convert.ToInt64(right))));
+            else
+            {
+                int t = 0;
+                Double left_ = 0; // 30.05.2020 12:34:34
+                left_ += Convert.ToDouble(left.Substring(8, 2)) * Math.Pow(10, 10);
+                left_ += Convert.ToDouble(left.Substring(3, 2)) * Math.Pow(10, 8);
+                left_ += Convert.ToDouble(left.Substring(0, 2)) * Math.Pow(10, 6);
+                if (left[12] == ':')
+                    t = 1;
+                left_ += Convert.ToDouble(left.Substring(11, 2-t)) * Math.Pow(10, 4);
+                left_ += Convert.ToDouble(left.Substring(14-t, 2)) * Math.Pow(10, 2);
+                left_ += Convert.ToDouble(left.Substring(17-t, 2)) * Math.Pow(10, 0);
+
+                t = 0;
+                Double right_ = 0; // 30.05.2020 12:34:34
+                right_ += Convert.ToDouble(right.Substring(8, 2)) * Math.Pow(10, 10);
+                right_ += Convert.ToDouble(right.Substring(3, 2)) * Math.Pow(10, 8);
+                right_ += Convert.ToDouble(right.Substring(0, 2)) * Math.Pow(10, 6);
+                if (right[12] == ':')
+                    t = 1;
+                right_ += Convert.ToDouble(right.Substring(11, 2 - t)) * Math.Pow(10, 4);
+                right_ += Convert.ToDouble(right.Substring(14 - t, 2)) * Math.Pow(10, 2);
+                right_ += Convert.ToDouble(right.Substring(17 - t, 2)) * Math.Pow(10, 0);
+
+                return left_ < right_;
+            }    
+
+        }
+
+        bool[] state_sort = { false, false, false, false };
+        private void listView1_ColumnClick(object sender, ColumnClickEventArgs e)
+        {
+            listView1.Sorting = System.Windows.Forms.SortOrder.None; //Ascending Descending
+
+            int N = listView1.Items.Count;
+            string[,] items = new string[N, 4];
+            for (int i = 0; i < listView1.Items.Count; i++)
+                for (int j = 0; j < 4; j++)
+                    items[i, j] = listView1.Items[i].SubItems[j].Text;
+            listView1.Items.Clear();
+
+            int k = e.Column;
+            state_sort[k] = !state_sort[k];
+
+            for (int i = 0; i < N; i++)
+                for (int j = 0; j < N - 1; j++)
+                    if (state_sort[k] == Сomparison(items[j, k], items[j + 1, k], k))
+                        swap(ref items, j);
+
+            for (int i = 0; i < N; i++)
+                listView1.Items.Add(new ListViewItem(new[] { items[i, 0], items[i, 1], items[i, 2], items[i, 3] }));
+            
         }
     }
 }
