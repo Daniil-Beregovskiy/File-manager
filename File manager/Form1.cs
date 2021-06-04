@@ -33,6 +33,7 @@ namespace File_manager
             TakeDisk();
             webClients = new List<WebClient>();
             WindowState = FormWindowState.Normal;
+            listView1.Sorting = System.Windows.Forms.SortOrder.None; //Ascending Descending
 
             // правая кнопка мыши по файлу/папке
             #region right click
@@ -544,12 +545,7 @@ namespace File_manager
             custom.Save();
         }
 
-        /*struct ViewItem
-        {
-            public string name, type, size, data;
-        }*/
-
-        static void swap(ref string[,] items, int j)
+        static void swap(ref string[,] items, int j) // меняет местави элементы
         {
             string[] temp = new string[4];
 
@@ -563,17 +559,16 @@ namespace File_manager
                 items[j + 1, k] = temp[k];
         }
 
-        bool Сomparison(string left, string right, int k)
+        bool Сomparison(string left, string right, int k) // сравнивает строки в зависимости от случая
         {
-            if (k < 2)
-            {
+            if (k < 2) { // сравнивает строки в алфавитном порядке
                 if (String.Compare(left, right) < 0)
                     return true;
                 else
                     return false;
             }
-            else if (k == 2)
-                return (right != "<DIR>" && (left == "<DIR>" || (Convert.ToInt64(left) < Convert.ToInt64(right))));
+            else if (k == 2) // сравнивает числа по размеру числа с учётом особо случая
+                return right != "<DIR>" && (left == "<DIR>" || (Convert.ToInt64(left) < Convert.ToInt64(right)));
             else
             {
                 int t = 0;
@@ -599,15 +594,14 @@ namespace File_manager
                 right_ += Convert.ToDouble(right.Substring(17 - t, 2)) * Math.Pow(10, 0);
 
                 return left_ < right_;
-            }    
+            } // сравнивает даты
 
         }
 
         bool[] state_sort = { false, false, false, false };
         private void listView1_ColumnClick(object sender, ColumnClickEventArgs e)
         {
-            listView1.Sorting = System.Windows.Forms.SortOrder.None; //Ascending Descending
-
+            // переносим информацию в отдельный контейнер items
             int N = listView1.Items.Count;
             string[,] items = new string[N, 4];
             for (int i = 0; i < listView1.Items.Count; i++)
@@ -615,14 +609,17 @@ namespace File_manager
                     items[i, j] = listView1.Items[i].SubItems[j].Text;
             listView1.Items.Clear();
 
+            // выбранный столбец
             int k = e.Column;
             state_sort[k] = !state_sort[k];
 
+            // сортируем items
             for (int i = 0; i < N; i++)
                 for (int j = 0; j < N - 1; j++)
                     if (state_sort[k] == Сomparison(items[j, k], items[j + 1, k], k))
                         swap(ref items, j);
 
+            // добавялем items в listView
             for (int i = 0; i < N; i++)
                 listView1.Items.Add(new ListViewItem(new[] { items[i, 0], items[i, 1], items[i, 2], items[i, 3] }));
             
